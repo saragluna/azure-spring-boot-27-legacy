@@ -1,22 +1,16 @@
-# Sample project for using Spring Cloud Azure KeyVault Secret and Spring Cloud Azure Stream Binder EventHubs
+# Migrate Spring Cloud Azure project from Spring Boot 2.7 to 3.0
 
-This project is targeted to demo the Spring Cloud Azure libraries 4.4.1 usage, then migrate to Spring Boot 3.0 and Spring Cloud Azure 6.0 in a Windows system.
+This project is targeted to demo the migration of a project, which using Spring Cloud Azure libraries and Spring Boot 2.7, to Spring Boot 3.0.
 
 ## Prerequisites
-- Java version 11 and 17
-- Spring Cloud version 2021.0.4
-- Spring Cloud Azure 4.4.1
+- Java version 17
+   - Spring Boot 3 requires Java 17
+   - Spring Boot 2 supports Java8+
 - [An Azure subscription](https://azure.microsoft.com/free/)
 - [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - Maven
 
-## Setup configuration on Azure
-
-### Create a service principal
-
-[Create an Azure service principal with the Azure CLI](https://learn.microsoft.com/cli/azure/create-an-azure-service-principal-azure-cli)
-
-Save the response data for next step configuration.
+## Provision Azure Resources
 
 ### Create Azure Storage Account
 
@@ -32,13 +26,15 @@ Create a key vault to store other resource credentials, see [Create a key vault 
 
 ### Configure secrets in Azure Key Vault Secret
 
-The application will read the credentials of the Event HUbs and Storage Account, which store in Secrets of the Key Vault. 
+The application will read the credentials of the Event Hubs and Storage Account, which store in Secrets of the Key Vault. 
 Create below 3 secrets in Key Vault:
 - eventhubsconnstring, it stores the connection string of the Event Hubs namespace.
 - storageaccountname, it stores the storage account name of the Storage Account.
 - storageaccountkey, it stores the access key of the Storage Account.
 
-## Run and verify
+-- No credential stored in KV, we should promote DAC
+
+## Run and verify with Spring Boot 2 
 
 ### Run locally with Maven
 
@@ -48,7 +44,7 @@ Open your Command prompt, run `mvn clean spring-boot:run`.
 mvn clean spring-boot:run
 ```
 
-Send a request to send a message to Event Hub.
+Send a request to send a message to Event Hubs.
 
 ```shell
 curl -X POST http://localhost:8080/message/send -H "Content-Type: application/json" -d "{\"content\":\"demo migration\"}"
@@ -66,7 +62,7 @@ Sending message: GenericMessage [payload=DemoEvent{id='1667872542592', content='
 Message 'DemoEvent{id='1667872542592', content='demo'}' successfully checked.
 ```
 
-## Upgrade to Spring Boot 3 and Spring Cloud Azure 6
+## Migrate to Spring Boot 3
 
 Upgrade to Spring Boot 3.0.0 and Spring Cloud Azure 6.0.0, we expect some known changes can be done by the migration tool `spring-boot-migrator`, it will enhance the Spring Boot 3 support.
 
@@ -115,6 +111,6 @@ Upgrade to Spring Boot 3.0.0 and Spring Cloud Azure 6.0.0, we expect some known 
 
     After applying the recipe, a log of `SBM: applied recipe 'boot-2.7-3.0-upgrade-report'` was committed locally.
 
-## Run and verify
+### Run and verify with Spring Boot 3
 
 [Re-run and verify](#run-and-verify) again.
