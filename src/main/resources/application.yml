@@ -1,0 +1,44 @@
+spring:
+  cloud:
+    azure:
+      keyvault:
+        secret:
+          credential:
+            client-id: <your-service-principal-id>
+            client-secret: <your-service-principal-secret>
+          profile:
+            tenant-id: <your-tenant-id>
+          property-source-enabled: true
+          property-sources:
+            - name: key-vault-property-source-1
+              endpoint: <your-keyvault-endpoint>
+      eventhubs:
+        processor:
+          checkpoint-store:
+            create-container-if-not-exists: true
+            container-name: test
+            account-name:  ${storageaccountname}
+            account-key: ${storageaccountkey}
+        connection-string: ${eventhubsconnstring}
+
+    stream:
+      function:
+        definition: consume;supply
+      bindings:
+        consume-in-0:
+          destination: demo
+          group: $Default
+        supply-out-0:
+          destination: demo
+      eventhubs:
+        bindings:
+          consume-in-0:
+            consumer:
+              checkpoint:
+                mode: MANUAL
+
+debug: on
+logging:
+  level:
+    org.springframework.integration.endpoint: error
+    org.springframework.integration.channel: error
